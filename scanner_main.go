@@ -5,6 +5,7 @@ import (
 	"log"
 	"io"
 	"strings"
+	"bufio"
 	"github.com/Bragoony/funtemps/conv"
 )
 func main() {
@@ -13,13 +14,23 @@ func main() {
 		log.Fatal(err)
 	}
 	defer src.Close()
-	dest, err := OpenFile("kjevik-temp-fahr-20220318-20230318.csv", os.O_RDWR|os.O_CREATE, 0644)
+	dest, err := os.OpenFile("kjevik-temp-fahr-20220318-20230318.csv", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer dest.Close()
 
-	
+	scanner := bufio.NewScanner(bufio.NewReader(src))
+	writer := bufio.NewWriter(dest)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		line = line + "\n"
+		writer.Write([]byte(line))
+	}
+	writer.Flush()
+/*
+
 	var buffer []byte
 	var linebuf []byte //nil
 	buffer = make([]byte, 1)
