@@ -3,13 +3,14 @@ package main
 import (
 	"os"
 	"log"
-	"io"
-	"strings"
+	//"io"
+	//"strings"
 	"bufio"
-	"github.com/Bragoony/funtemps/conv"
+	"github.com/Bragoony/minyr/yr"
 )
-func main() {
-	src, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
+func scannerMain() {
+	//src, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
+	src, err := os.Open("table.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,6 +26,7 @@ func main() {
 
 	for scanner.Scan() {
 		line := scanner.Text()
+		yr.CelsiusToFahrenheitLine(line)
 		line = line + "\n"
 		writer.Write([]byte(line))
 	}
@@ -61,4 +63,6 @@ func main() {
 			break
 		}
 	}
+	*/
 }
+

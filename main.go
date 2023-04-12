@@ -1,53 +1,64 @@
 package main
 
 import (
-	"os"
-	"log"
-	"io"
-	"strings"
-	"github.com/Bragoony/funtemps/conv"
+	"fmt"
+	//"io"
+	//"log"
+	//"os"
+	//"strings"
+	//"bufio"
+
+	"github.com/Bragoony/minyr/yr"
 )
+/*
 func main() {
-	src, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
+	src, err := os.Open("table.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer src.Close()
-	dest, err := OpenFile("kjevik-temp-fahr-20220318-20230318.csv", os.O_RDWR|os.O_CREATE, 0644)
+	dest, err := os.OpenFile("kjevik-temp-fahr-20220318-20230318.csv", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer dest.Close()
 
-	
-	var buffer []byte
-	var linebuf []byte //nil
-	buffer = make([]byte, 1)
-	bytesCount := 0
-
-	for {
-		_, err := src.Read(buffer)
-		if err != nil  && err != io.EOF {
-			log.Fatal(err)
+	scanner := bufio.NewScanner(bufio.NewReader(src))
+		numLines := 0
+		for scanner.Scan(){
+			numLines++	
 		}
 
-		bytesCount++
-		//log.Println("%c",buffer[:n])
-		if buffer[0] == 0x0A {
-			log.Println(string(linebuf))
-			elementArray := strings.Split(string(linebuf), ";")
-			if len(elementArray) > 3 {
-				celsius := elementArray[3]
-				fahr := conv.CelsiusToFarhenheit(celsius)
-				log.Println(elementArray[3])
+		scanner = bufio.NewScanner(bufio.NewReader(src))
+		src.Seek(0, 0)
+	writer := bufio.NewWriter(dest)
+
+	for i := 1; scanner.Scan(); i++{
+		line := scanner.Text()
+		if i != 1 || i != numLines{
+			newLine, err := yr.CelsiusToFahrenheitLine(line)
+			_, err = writer.WriteString(newLine + "\n")
+			if err != nil {
+				log.Fatal(err)
 			}
-			linebuf = nil
-		} else {
-		 linebuf = append(linebuf, buffer[0])
-		}
-		//log.Println(string(linebuf))
-		if err == io.EOF {
-			break
+			continue
 		}
 	}
+	err = writer.Flush()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+*/
+func main() {
+	filePath := "table.csv"
+
+	avg, err := yr.CalculateAverageFourthElement(filePath)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Average of fourth elements: %.2f\n", avg)
 }
