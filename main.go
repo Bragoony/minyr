@@ -1,16 +1,17 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	//"io"
-	//"log"
-	//"os"
+	"log"
+	"os"
 	//"strings"
-	//"bufio"
+	"bufio"
 
 	"github.com/Bragoony/minyr/yr"
 )
-/*
+
+
 func main() {
 	src, err := os.Open("table.csv")
 	if err != nil {
@@ -23,26 +24,33 @@ func main() {
 	}
 	defer dest.Close()
 
-	scanner := bufio.NewScanner(bufio.NewReader(src))
-		numLines := 0
-		for scanner.Scan(){
-			numLines++	
-		}
+	lineNumber := 0
 
-		scanner = bufio.NewScanner(bufio.NewReader(src))
-		src.Seek(0, 0)
+	scanner := bufio.NewScanner(bufio.NewReader(src))
 	writer := bufio.NewWriter(dest)
 
-	for i := 1; scanner.Scan(); i++{
+	for scanner.Scan(){
+		lineNumber++
 		line := scanner.Text()
-		if i != 1 || i != numLines{
+		if lineNumber == 1 {
+			_, err = writer.WriteString(line + "\n")
+			if err != nil {
+				log.Fatal(err)
+				}
+			continue
+			}
+			if lineNumber == 27 {
+				_, err = writer.WriteString(line)
+				if err != nil {
+					log.Fatal(err)
+					}
+				continue
+				}
 			newLine, err := yr.CelsiusToFahrenheitLine(line)
 			_, err = writer.WriteString(newLine + "\n")
 			if err != nil {
 				log.Fatal(err)
-			}
-			continue
-		}
+				}
 	}
 	err = writer.Flush()
 	if err != nil {
@@ -50,7 +58,9 @@ func main() {
 	}
 
 }
-*/
+
+
+/*
 func main() {
 	filePath := "table.csv"
 
@@ -62,3 +72,4 @@ func main() {
 
 	fmt.Printf("Average of fourth elements: %.2f\n", avg)
 }
+*/
