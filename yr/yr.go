@@ -9,6 +9,8 @@ import (
 	"bufio"
 	"os"
 	"io"
+	"log"
+	"math"
 )
 
 func CelsiusToFahrenheitString(celsius string) (string, error) {
@@ -41,29 +43,6 @@ func CelsiusToFahrenheitLine(line string) (string, error) {
 
 
 	//return "Kjevik;SN39040;18.03.2022 01:50;42.8", err
-}
-
-func StudentString(string) (string, error) {
-	var err error
-
-	tekst := ("Endringen er gjort av Brage")
-	return tekst, err
-}
-
-func StudentLine(line string) (string, error) {
-
-	dividedString := strings.Split(line, ";")
-	var err error
-
-	if (len(dividedString) == 4) {
-		dividedString[3], err = StudentString(dividedString[3])
-		if err != nil {
-			return "", err
-		}
-	} else {
-		return "", errors.New("linje har ikke forventet format")
-	}
-	return strings.Join(dividedString, ";"), nil
 }
 
 func CountLines(filename string) (int, error) {
@@ -141,7 +120,7 @@ func CalculateAverageFourthElement(filePath string) (float64, error) {
 	lineNumber := 0
 	for scanner.Scan() {
 		lineNumber++
-		if lineNumber == 1 || lineNumber == 27 {
+		if lineNumber == 1 || lineNumber == 16756 {
 			continue
 		}
 
@@ -170,6 +149,87 @@ func CalculateAverageFourthElement(filePath string) (float64, error) {
 		return 0, fmt.Errorf("no valid lines found")
 	}
 	average := sum / float64(count)
+	average = math.Round(average*100) / 100
 
 	return average, nil
+}
+
+func ConvertCelsiusFileToFahrenheitFile() {
+	src, err := os.Open("table.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer src.Close()
+	dest, err := os.OpenFile("kjevik-temp-fahr-20220318-20230318.csv", os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dest.Close()
+
+	lineNumber := 0
+	scanner := bufio.NewScanner(bufio.NewReader(src))
+	writer := bufio.NewWriter(dest)
+
+	for scanner.Scan(){
+		lineNumber++
+		line := scanner.Text()
+		if lineNumber == 1 {
+			_, err = writer.WriteString(line + "\n")
+			if err != nil {
+				log.Fatal(err)
+				}
+			continue
+			}
+			if lineNumber == 16756 {
+				_, err = writer.WriteString(line)
+				if err != nil {
+					log.Fatal(err)
+					}
+				continue
+				}
+			newLine, err := CelsiusToFahrenheitLine(line)
+			_, err = writer.WriteString(newLine + "\n")
+			if err != nil {
+				log.Fatal(err)
+				}
+	}
+	err = writer.Flush()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func ReadLastLine(filePath string) (string, error) {
+	// Open the CSV file
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", fmt.Errorf("error opening file: %v", err)
+	}
+	defer file.Close()
+
+	// Create a scanner to read the file line by line
+	scanner := bufio.NewScanner(file)
+
+	// Initialize a variable to store the last line
+	var lastLine string
+
+	// Loop through each line in the file and keep updating the last line variable
+	for scanner.Scan() {
+		lastLine = scanner.Text()
+	}
+
+	// Check if there was an error during scanning
+	if err := scanner.Err(); err != nil {
+		return "", fmt.Errorf("error reading file: %v", err)
+	}
+
+	// Check if the last line contains the expected string
+	expectedString := "Data er gyldig per 20.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);endringen er gjort av Brage Kjemperud"
+	if strings.Contains(lastLine, expectedString) {
+		return lastLine, nil
+	}
+
+	// Return an error if the last line doesn't contain the expected string
+	return "", fmt.Errorf("last line does not contain the expected string")
 }
