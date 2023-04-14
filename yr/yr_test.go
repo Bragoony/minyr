@@ -63,21 +63,19 @@ func TestCalculateAverageFourthElementInCelsiusFile(t *testing.T) {
 	filePath := "../kjevik-temp-celsius-20220318-20230318.csv"
 	expectedAverage := 8.56
 
-	// Call the function to calculate the average
 	average, err := CalculateAverageFourthElement(filePath)
 	if err != nil {
 		t.Errorf("error calculating average: %v", err)
 	}
 
-	// Check if the average is equal to the expected value
 	if average != expectedAverage {
 		t.Errorf("average %v does not match expected value %v", average, expectedAverage)
 	}
 }
 
 func TestReadLastLineContains(t *testing.T) {
-    filePath := "../table.csv"
-    expectedString := "Data er gyldig per 20.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);endringen er gjort av Brage Kjemperud"
+    filePath := "../kjevik-temp-fahr-20220318-20230318.csv"
+    expectedString := "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);endringen er gjort av Brage Kjemperud"
 
     lastLine, err := ReadLastLine(filePath)
     if err != nil {

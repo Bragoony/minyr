@@ -45,18 +45,18 @@ func CelsiusToFahrenheitLine(line string) (string, error) {
 	//return "Kjevik;SN39040;18.03.2022 01:50;42.8", err
 }
 
+//Teller linjer til en fil
 func CountLines(filename string) (int, error) {
-	// Open the file for reading
 	file, err := os.Open(filename)
 	if err != nil {
 		return 0, fmt.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// Create a new scanner to read the file line by line
+	//Lager en scanner som leser gjennom hver linje i filen
 	scanner := bufio.NewScanner(file)
 
-	// Loop through the file and count the lines
+	//Lopp gjennom filen og teller linjene
 	lineCount := 0
 	for scanner.Scan() {
 		lineCount++
@@ -69,6 +69,7 @@ func CountLines(filename string) (int, error) {
 	return lineCount, nil
 }
 
+//Endrer den siste linjen i en spesifik csv fil
 func EditLastLine(filename string) error {
     file, err := os.OpenFile(filename, os.O_RDWR, 0644)
     if err != nil {
@@ -100,23 +101,22 @@ func EditLastLine(filename string) error {
 
     return nil
 }
-
+//Sjekker gjennomsnittet av det fjerde elementet til en spesifik csv fil.
 func CalculateAverageFourthElement(filePath string) (float64, error) {
-	// Open the CSV file
 	file, err := os.Open(filePath)
 	if err != nil {
 		return 0, fmt.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// Create a scanner to read the file line by line
+	//Lager en scanner som leser gjennom hver linje i filen
 	scanner := bufio.NewScanner(file)
 
-	// Initialize variables to keep track of the sum and count of fourth elements
+	// Lager variabler for å holde styr med sum og count verdier
 	sum := 0.0
 	count := 0
 
-	// Loop through each line in the file
+	//Looper gjennom hver linje  filen
 	lineNumber := 0
 	for scanner.Scan() {
 		lineNumber++
@@ -124,14 +124,14 @@ func CalculateAverageFourthElement(filePath string) (float64, error) {
 			continue
 		}
 
-		// Split the line into fields
+		//Splitter linjen til flere felt
 		line := scanner.Text()
 		fields := strings.Split(line, ";")
 		if len(fields) < 4 {
 			return 0, fmt.Errorf("line %d has less than 4 fields", lineNumber)
 		}
 
-		// Convert the fourth field to a float and add it to the sum
+		//Konverterer det fjerde elementet til en float legger det til summen.
 		num, err := strconv.ParseFloat(fields[3], 64)
 		if err != nil {
 			return 0, fmt.Errorf("error converting field %d in line %d to float: %v", 3, lineNumber, err)
@@ -144,7 +144,7 @@ func CalculateAverageFourthElement(filePath string) (float64, error) {
 		return 0, fmt.Errorf("error reading file: %v", err)
 	}
 
-	// Calculate the average of the fourth elements
+	//Sjekker gjennomsnittet av de fjerde elementene
 	if count == 0 {
 		return 0, fmt.Errorf("no valid lines found")
 	}
@@ -153,7 +153,7 @@ func CalculateAverageFourthElement(filePath string) (float64, error) {
 
 	return average, nil
 }
-
+//Konverterer verdiene i celsius filen til fahrenheit verdier, og lager en ny fahrenheit csv fil
 func ConvertCelsiusFileToFahrenheitFile() {
 	src, err := os.Open("table.csv")
 	if err != nil {
@@ -201,35 +201,31 @@ func ConvertCelsiusFileToFahrenheitFile() {
 }
 
 func ReadLastLine(filePath string) (string, error) {
-	// Open the CSV file
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", fmt.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
 
-	// Create a scanner to read the file line by line
+	////Lager en scanner som leser gjennom hver linje i filen
 	scanner := bufio.NewScanner(file)
 
-	// Initialize a variable to store the last line
+	//Lager en variabel som lagrer den siste linjen.
 	var lastLine string
 
-	// Loop through each line in the file and keep updating the last line variable
+	//Loop gjenom hver linje i filen og oppdater lastline variablen
 	for scanner.Scan() {
 		lastLine = scanner.Text()
 	}
 
-	// Check if there was an error during scanning
 	if err := scanner.Err(); err != nil {
 		return "", fmt.Errorf("error reading file: %v", err)
 	}
 
-	// Check if the last line contains the expected string
-	expectedString := "Data er gyldig per 20.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);endringen er gjort av Brage Kjemperud"
+	expectedString := "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);endringen er gjort av Brage Kjemperud"
 	if strings.Contains(lastLine, expectedString) {
 		return lastLine, nil
 	}
 
-	// Return an error if the last line doesn't contain the expected string
 	return "", fmt.Errorf("last line does not contain the expected string")
 }
