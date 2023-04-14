@@ -155,7 +155,7 @@ func CalculateAverageFourthElement(filePath string) (float64, error) {
 }
 //Konverterer verdiene i celsius filen til fahrenheit verdier, og lager en ny fahrenheit csv fil
 func ConvertCelsiusFileToFahrenheitFile() {
-	src, err := os.Open("table.csv")
+	src, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
